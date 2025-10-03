@@ -20,7 +20,7 @@ public class Coordenada {
         return columna;
     }
 
-    public void setColumna(int columna) {
+    public void setColumna(char columna) {
         this.columna = columna;
     }
 }

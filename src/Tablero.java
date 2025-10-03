@@ -1,15 +1,19 @@
 public class Tablero {
-    private int filas;
-    private char columnas;
-    private Casilla[][] casilla;
+    private Casilla[][] casillas;
 
-    public Tablero(int filas, char columnas, Casilla[][] casilla) {
-        this.filas = filas;
-        this.columnas = columnas;
-        this.casilla = casilla;
+    public Tablero() {
+        casillas = new Casilla[10][10]; // <-- inicializo la matriz
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                casillas[i][j] = new Casilla(); // ahora sí se puede
+            }
+        }
     }
 
-    public Tablero(){}
-
-    //Metodos recibirDisparo , colocarBarco y mostrarTablero
+    // Getter para acceder a una casilla
+    public Casilla getCasilla(int fila, int col) {
+        return casillas[fila][col];
+    }
 }
+
