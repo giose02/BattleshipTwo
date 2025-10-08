@@ -1,5 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import javax.imageio.ImageIO;
+
 
 public class BattleShipGUI extends JFrame {
 
@@ -11,15 +17,21 @@ public class BattleShipGUI extends JFrame {
 
 
         //---Ventana Main---
-        JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setOpaque(true);
+        JPanel panelPrincipal = new JPanel( new BorderLayout() );
+
+        BackgroundPanel bgPanel = new BackgroundPanel("resources/battleships-pictures-1920-x-1080-nxrdvs7dmyq3jtlq.jpg");
+        setContentPane(bgPanel);
+        panelPrincipal.setLayout(new BorderLayout());
+
         JButton battleShip = new JButton("Jugar");
-        battleShip.setPreferredSize(new Dimension(100, 50));
-        panelPrincipal.add(battleShip, BorderLayout.CENTER);
+        battleShip.setSize(25,25);
+        panelPrincipal.add(battleShip,BorderLayout.NORTH);
+        panelPrincipal.setOpaque(false);
 
         battleShip.addActionListener(e -> {
             switchPanel();
             remove(panelPrincipal);
+            bgPanel.paintComponent(null);
         });
 
         add(panelPrincipal, BorderLayout.CENTER);
@@ -70,5 +82,36 @@ public class BattleShipGUI extends JFrame {
         add(panelJugador1, BorderLayout.WEST);
         add(panelJugador2, BorderLayout.EAST);
         pack();
+    }
+
+    //---Clase Auxiliar BG ---
+    private static class BackgroundPanel extends JPanel {
+        private BufferedImage background;
+
+        public BackgroundPanel(String path) {
+            // intentamos cargar desde disco
+            try {
+                File f = new File(path);
+                if (f.exists()) {
+                    background = ImageIO.read(f);
+                } else {
+                    // intentamos cargar como recurso en classpath
+                    URL res = BackgroundPanel.class.getResource("/" + path);
+                    if (res != null) background = ImageIO.read(res);
+                }
+            } catch (IOException e) {
+                // si falla, dejamos background en null y seguimos
+                background = null;
+            }
+            setLayout(new BorderLayout());
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (background != null) {
+                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 }
