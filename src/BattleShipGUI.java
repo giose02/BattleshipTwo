@@ -55,17 +55,22 @@ public class BattleShipGUI extends JFrame {
         return tableroGUI;
     }
     public void addTableroListener(ActionListener listener) {
-        for (JButton[] fila : tableroj1) {
-            for (JButton b : fila) {
+        for (int i = 0; i < tableroj1.length; i++) {
+            for (int j = 0; j < tableroj1[i].length; j++) {
+                JButton b = tableroj1[i][j];
+                b.setActionCommand(i + "," + j);
                 b.addActionListener(listener);
             }
         }
-        for (JButton[] fila : tableroj2) {
-            for (JButton b : fila) {
+        for (int i = 0; i < tableroj2.length; i++) {
+            for (int j = 0; j < tableroj2[i].length; j++) {
+                JButton b = tableroj2[i][j];
+                b.setActionCommand(i + "," + j);
                 b.addActionListener(listener);
             }
         }
     }
+
 
     // ---Creo Panel PowerUps
     private JPanel crearPanelPowerUps(String... nombres) { // con el String... puedo poner tantos PwUps como quiera

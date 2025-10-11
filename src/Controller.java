@@ -8,7 +8,6 @@ public class Controller implements ActionListener {
 
     public Controller() {
         vista = new BattleShipGUI();
-
         JPanel panelInicio = vista.getPanelInicio();
         vista.add(panelInicio);
         comenzarJuego();
@@ -20,7 +19,6 @@ public class Controller implements ActionListener {
             vista.add(vista.switchPanel());
             vista.revalidate();
             vista.repaint();
-
             vista.addTableroListener(this);
 
         });
