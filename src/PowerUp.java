@@ -1,12 +1,10 @@
 public class PowerUp {
     private String nombre;
     private String efecto;
-    private String rareza;
 
-    public PowerUp(String nombre, String efecto, String rareza){
+    public PowerUp(String nombre, String efecto){
         this.nombre = nombre;
         this.efecto = efecto;
-        this.rareza = rareza;
     }
 
     public PowerUp(){}

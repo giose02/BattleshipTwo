@@ -6,8 +6,6 @@ public class Juego {
     private boolean juegoTerminado;
 
 
-
-
     public void iniciarJuego(){
         //Configurar tableros y barcos aca
     }

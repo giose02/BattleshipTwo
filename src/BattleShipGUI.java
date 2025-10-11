@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,10 +9,15 @@ import javax.imageio.ImageIO;
 
 
 public class BattleShipGUI extends JFrame {
+    private JButton startButton;
+    private JButton[][] tableroj1= new JButton[10][10];
+    private JButton[][] tableroj2= new JButton[10][10];
 
-    public BattleShipGUI() {
+    public BattleShipGUI() {};
+
+    public JPanel getPanelInicio(){
         setTitle("BattleShip");
-        setBounds(500,500,500,500);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(20, 20)); //Gap entre paneles internos
 
@@ -21,34 +27,44 @@ public class BattleShipGUI extends JFrame {
 
         BackgroundPanel bgPanel = new BackgroundPanel("resources/battleships-pictures-1920-x-1080-nxrdvs7dmyq3jtlq.jpg");
         setContentPane(bgPanel);
-        panelPrincipal.setLayout(new BorderLayout());
 
         JButton battleShip = new JButton("Jugar");
+        this.startButton = battleShip;
         battleShip.setSize(25,25);
         panelPrincipal.add(battleShip,BorderLayout.NORTH);
         panelPrincipal.setOpaque(false);
 
-        battleShip.addActionListener(e -> {
-            switchPanel();
-            remove(panelPrincipal);
-            bgPanel.paintComponent(null);
-        });
 
-        add(panelPrincipal, BorderLayout.CENTER);
         setVisible(true);
-    }
+        return panelPrincipal;
+    };
 
     // ---Creo Tablero---
-    private JPanel crearTablero() {
+    private JPanel crearTablero(JButton[][] a) {
         JPanel tableroGUI = new JPanel(new GridLayout(10, 10));
-        for (int i = 0; i <= 9; i++) {
-            for (int j = 0; j <= 9; j++) {
-                JButton botonCelda = new JButton("");
-                botonCelda.setPreferredSize(new Dimension(30, 30));
-                tableroGUI.add(botonCelda);
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (a[i][j] == null) { // Creamos el botón solo si no existe
+                    JButton botonCelda = new JButton("");
+                    botonCelda.setPreferredSize(new Dimension(30, 30));
+                    a[i][j] = botonCelda;
+                }
+                tableroGUI.add(a[i][j]);
             }
         }
         return tableroGUI;
+    }
+    public void addTableroListener(ActionListener listener) {
+        for (JButton[] fila : tableroj1) {
+            for (JButton b : fila) {
+                b.addActionListener(listener);
+            }
+        }
+        for (JButton[] fila : tableroj2) {
+            for (JButton b : fila) {
+                b.addActionListener(listener);
+            }
+        }
     }
 
     // ---Creo Panel PowerUps
@@ -63,26 +79,46 @@ public class BattleShipGUI extends JFrame {
 
     //---Cambio Pantalla Juego---
 
-    public void switchPanel() {
+    public JPanel switchPanel() {
+        JPanel panelJuego = new JPanel(new GridLayout(1, 2, 20, 0)); // Panel principal horizontal
+
         //----Jugador 1----
-        JPanel panelTablero1 = crearTablero();
+        JPanel panelTablero1 = crearTablero(tableroj1);
         JPanel panelPowerUps1 = crearPanelPowerUps("pwu1", "pwu2", "pwu3");
         JPanel panelJugador1 = new JPanel(new BorderLayout());
-        panelJugador1.add(panelTablero1, BorderLayout.NORTH);
+        panelJugador1.add(panelTablero1, BorderLayout.CENTER);
         panelJugador1.add(panelPowerUps1, BorderLayout.SOUTH);
+        panelJugador1.setOpaque(false);
 
         //----Jugador 2----
-        JPanel panelTablero2 = crearTablero();
-        JPanel panelPowerUps2 = crearPanelPowerUps("pwu4", "pwu5", "pwu6");
+        JPanel panelTablero2 = crearTablero(tableroj2);
+        JPanel panelPowerUps2 = crearPanelPowerUps("pwu1", "pwu2", "pwu3");
         JPanel panelJugador2 = new JPanel(new BorderLayout());
-        panelJugador2.add(panelTablero2, BorderLayout.NORTH);
+        panelJugador2.add(panelTablero2, BorderLayout.CENTER);
         panelJugador2.add(panelPowerUps2, BorderLayout.SOUTH);
+        panelJugador2.setOpaque(false);
 
         // ---- Agregar paneles a la ventana ----
-        add(panelJugador1, BorderLayout.WEST);
-        add(panelJugador2, BorderLayout.EAST);
-        pack();
+        panelJuego.add(panelJugador1);
+        panelJuego.add(panelJugador2);
+        panelJuego.setOpaque(false);
+
+        return panelJuego;
     }
+    public JButton getStartButton() {
+        return startButton;
+    }
+    public JButton[][] getTableroj1() {
+        return tableroj1;
+    }
+    public JButton[][] getTableroj2() {
+        return tableroj2;
+    }
+
+
+
+
+
 
     //---Clase Auxiliar BG ---
     private static class BackgroundPanel extends JPanel {
