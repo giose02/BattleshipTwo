@@ -41,12 +41,12 @@ public class BattleShipGUI extends JFrame {
 
     // ---Creo Tablero---
     private JPanel crearTablero(JButton[][] a) {
-        JPanel tableroGUI = new JPanel(new GridLayout(10, 10));
+        JPanel tableroGUI = new JPanel(new GridLayout(10, 10, 5, 5));
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (a[i][j] == null) { // Creamos el botón solo si no existe
                     JButton botonCelda = new JButton("");
-                    botonCelda.setPreferredSize(new Dimension(30, 30));
+                    botonCelda.setPreferredSize(new Dimension(10,10));
                     a[i][j] = botonCelda;
                 }
                 tableroGUI.add(a[i][j]);
@@ -85,7 +85,7 @@ public class BattleShipGUI extends JFrame {
     //---Cambio Pantalla Juego---
 
     public JPanel switchPanel() {
-        JPanel panelJuego = new JPanel(new GridLayout(1, 2, 20, 0)); // Panel principal horizontal
+        JPanel panelJuego = new JPanel(new GridLayout(1, 2, 5,5)); // Panel principal horizontal
 
         //----Jugador 1----
         JPanel panelTablero1 = crearTablero(tableroj1);

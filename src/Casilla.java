@@ -1,4 +1,4 @@
-public class Casilla extends Tablero {
+public class Casilla{
     private boolean tieneBarco;
     private boolean fueDisparada;
 
