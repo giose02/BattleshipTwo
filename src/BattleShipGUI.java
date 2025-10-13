@@ -1,12 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class BattleShipGUI extends JFrame {
     private JButton startButton;
@@ -41,17 +41,19 @@ public class BattleShipGUI extends JFrame {
 
     // ---Creo Tablero---
     private JPanel crearTablero(JButton[][] a) {
-        JPanel tableroGUI = new JPanel(new GridLayout(10, 10, 5, 5));
+        JPanel tableroGUI = new JPanel(new GridLayout(10, 10,0,0));
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (a[i][j] == null) { // Creamos el botón solo si no existe
                     JButton botonCelda = new JButton("");
-                    botonCelda.setPreferredSize(new Dimension(10,10));
+                    botonCelda.setPreferredSize(new Dimension(60,60));
+                    botonCelda.setOpaque(true);
                     a[i][j] = botonCelda;
                 }
                 tableroGUI.add(a[i][j]);
             }
         }
+        tableroGUI.setOpaque(false);
         return tableroGUI;
     }
     public void addTableroListener(ActionListener listener) {
@@ -78,6 +80,7 @@ public class BattleShipGUI extends JFrame {
         for (String nombre : nombres) { // Itero en cada String parametro
             JButton boton = new JButton(nombre);
             panel.add(boton);
+            panel.setOpaque(false);
         }
         return panel;
     }
@@ -154,5 +157,26 @@ public class BattleShipGUI extends JFrame {
                 g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
             }
         }
+    }
+
+    public void mostrarSecuenciaImagenes(JComponent componente, String[] imagenes, int delay) {
+        final int[] index = {0}; // contador interno
+
+        Timer timer = new Timer(delay, null);
+        timer.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (index[0] < imagenes.length) {
+                    ImageIcon icono = new ImageIcon(imagenes[index[0]]);
+                    if (componente instanceof JButton)
+                        ((JButton) componente).setIcon(icono);
+                    else if (componente instanceof JLabel)
+                        ((JLabel) componente).setIcon(icono);
+                    index[0]++;
+                } else {
+                    timer.stop(); // fin de la secuencia
+                }
+            }
+        });
+        timer.start();
     }
 }
