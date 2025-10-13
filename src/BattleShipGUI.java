@@ -25,7 +25,7 @@ public class BattleShipGUI extends JFrame {
         //---Ventana Main---
         JPanel panelPrincipal = new JPanel( new BorderLayout() );
 
-        BackgroundPanel bgPanel = new BackgroundPanel("resources/battleships-pictures-1920-x-1080-nxrdvs7dmyq3jtlq.jpg");
+        BackgroundPanel bgPanel = new BackgroundPanel("resources/ChatGPT Image 13 oct 2025, 16_25_39.png");
         setContentPane(bgPanel);
 
         JButton battleShip = new JButton("Jugar");
@@ -47,7 +47,7 @@ public class BattleShipGUI extends JFrame {
                 if (a[i][j] == null) { // Creamos el botón solo si no existe
                     JButton botonCelda = new JButton("");
                     botonCelda.setPreferredSize(new Dimension(60,60));
-                    botonCelda.setOpaque(true);
+                    botonCelda.setContentAreaFilled(false);;
                     a[i][j] = botonCelda;
                 }
                 tableroGUI.add(a[i][j]);
