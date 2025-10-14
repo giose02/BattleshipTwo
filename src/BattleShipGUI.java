@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -123,8 +124,6 @@ public class BattleShipGUI extends JFrame {
 
 
 
-
-
     //---Clase Auxiliar BG ---
     private static class BackgroundPanel extends JPanel {
         private BufferedImage background;
@@ -154,5 +153,25 @@ public class BattleShipGUI extends JFrame {
                 g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
             }
         }
+    }
+    public void mostrarSecuenciaImagenes(JComponent componente, String[] imagenes, int delay) {
+        final int[] index = {0}; // contador interno
+
+        Timer timer = new Timer(delay, null);
+        timer.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (index[0] < imagenes.length) {
+                    ImageIcon icono = new ImageIcon(imagenes[index[0]]);
+                    if (componente instanceof JButton)
+                        ((JButton) componente).setIcon(icono);
+                    else if (componente instanceof JLabel)
+                        ((JLabel) componente).setIcon(icono);
+                    index[0]++;
+                } else {
+                    timer.stop(); // fin de la secuencia
+                }
+            }
+        });
+        timer.start();
     }
 }
