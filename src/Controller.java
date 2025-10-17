@@ -19,7 +19,7 @@ public class Controller implements ActionListener {
         vista.getStartButton().addActionListener(e -> {
             vista.remove(vista.getPanelInicio());
             vista.construtorPanelPrincipal();
-            vista.add(vista.switchJugador1());
+            vista.add(vista.switchJugador2());
             vista.revalidate();
             vista.repaint();
             vista.addTableroListener(this);
@@ -32,12 +32,13 @@ public class Controller implements ActionListener {
         int fila = Integer.parseInt(partes[0]);
         int col = Integer.parseInt(partes[1]);
 
+
         if (juego.getTurnoActual()) {
             if (!juego.getTableroJugador1().getCasilla(fila, col).getFueDisparada()
                     && !juego.getTableroJugador1().getCasilla(fila, col).getTieneBarco()) {
                 juego.getTableroJugador1().getCasilla(fila, col).disparar();
-                String[] imagenes = { "src/resources/agua2.1.jpg", "src/resources/agua2.2.jpg"};
-                vista.mostrarSecuenciaImagenes(vista.getTableroj2()[fila][col], imagenes, 400);
+                String[] imagenes = { "src/resources/anim1.jpg", "src/resources/anim2.jpg","src/resources/anim3.jpg" };
+                vista.mostrarSecuenciaImagenes(vista.getTableroj2()[fila][col], imagenes, 600);
 
 
             } else if (!juego.getTableroJugador1().getCasilla(fila, col).getFueDisparada()
@@ -46,10 +47,20 @@ public class Controller implements ActionListener {
                 juego.getTableroJugador1().getCasilla(fila, col).disparar();
             }
             juego.cambiarTurno();
+
+            //---Cambio de Tablero---
+            vista.remove(vista.switchJugador2());
+            vista.add(vista.switchJugador1());
+            vista.repaint();
+            vista.revalidate();
+
+
+
         } else {
             if (!juego.getTableroJugador2().getCasilla(fila, col).getFueDisparada()
                     && !juego.getTableroJugador2().getCasilla(fila, col).getTieneBarco()) {
-                vista.getTableroj1()[fila][col].setBackground(Color.BLUE);
+                String[] imagenes = { "src/resources/anim1.jpg", "src/resources/anim2.jpg","src/resources/anim3.jpg" };
+                vista.mostrarSecuenciaImagenes(vista.getTableroj1()[fila][col], imagenes, 700);
                 juego.getTableroJugador2().getCasilla(fila, col).disparar();
 
             } else if (!juego.getTableroJugador2().getCasilla(fila, col).getFueDisparada()
@@ -59,7 +70,13 @@ public class Controller implements ActionListener {
                 vista.getTableroj1()[fila][col].setEnabled(false);
             }
             juego.cambiarTurno();
+
+            //---Cambio de Tablero---
+            vista.remove(vista.switchJugador1());
+            vista.add(vista.switchJugador2());
+            vista.repaint();
+            vista.revalidate();
+
         }
-        vista.getTableroj1()[fila][col].setBackground(Color.BLUE);
     }
 }

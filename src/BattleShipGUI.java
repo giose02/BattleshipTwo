@@ -30,7 +30,7 @@ public class BattleShipGUI extends JFrame {
         //---Ventana Main---
         JPanel panelPrincipal = new JPanel( new BorderLayout() );
 
-        BackgroundPanel bgPanel = new BackgroundPanel("resources/battleships-pictures-1920-x-1080-nxrdvs7dmyq3jtlq.jpg");
+        BackgroundPanel bgPanel = new BackgroundPanel("resources/bgPrin1.jpg");
         setContentPane(bgPanel);
 
         JButton battleShip = new JButton("Jugar");
@@ -44,7 +44,7 @@ public class BattleShipGUI extends JFrame {
         return panelPrincipal;
     };
 
-    // ---Creo Tablero---
+    // ---Creo Tablero--- Cambiar para que sea void
     private JPanel crearTablero(JButton[][] a) {
         JPanel tableroGUI = new JPanel(new GridLayout(10, 10));
         for (int i = 0; i < 10; i++) {
@@ -115,7 +115,7 @@ public class BattleShipGUI extends JFrame {
         panelTotal.setPreferredSize(new Dimension(500, 500));
 
         JPanel panelJuego1 = new JPanel(new BorderLayout(30, 30));
-        panelJuego1.setPreferredSize(new Dimension(500, 500));
+        panelJuego1.setPreferredSize(new Dimension(800, 800));
 
         JPanel panelTablero1 = getTablero(tableroj1);
         panelTablero1.setOpaque(false);
@@ -139,15 +139,31 @@ public class BattleShipGUI extends JFrame {
     }
 
     public JPanel switchJugador2() {
-        JPanel panelJuego2 = new JPanel(new GridLayout(1, 2, 20, 0));
+        JPanel panelTotal2 = new JPanel(new GridBagLayout()); // Cambiamos el layout a GridBagLayout
+        panelTotal2.setPreferredSize(new Dimension(700, 700));
+
+        JPanel panelJuego2 = new JPanel(new BorderLayout(30, 30));
+        panelJuego2.setPreferredSize(new Dimension(800, 800));
 
         JPanel panelTablero2 = getTablero(tableroj2);
+        panelTablero2.setOpaque(false);
         JPanel panelPowerUps2 = getPowerUps(j2PowerUps);
-        panelJuego2.add(panelTablero2);
-        panelJuego2.add(panelPowerUps2);
-        panelJuego2.setOpaque(false);
+        panelPowerUps2.setOpaque(false);
 
-        return panelJuego2;
+
+        panelJuego2.add(panelTablero2, BorderLayout.CENTER);
+        panelJuego2.add(panelPowerUps2, BorderLayout.SOUTH);
+
+        panelJuego2.setOpaque(false);
+        panelTotal2.setOpaque(false);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0; // Centrar horizontalmente
+        gbc.gridy = 0; // Centrar verticalmente
+        gbc.anchor = GridBagConstraints.CENTER; // Aseguramos que se centre
+        panelTotal2.add(panelJuego2, gbc);
+
+        return panelTotal2;
     };
 
     //---Cambio Pantalla Juego---
@@ -171,6 +187,8 @@ public class BattleShipGUI extends JFrame {
     public JButton[][] getTableroj2() {
         return tableroj2;
     }
+
+
 
 
 
