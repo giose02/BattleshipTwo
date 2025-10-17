@@ -5,11 +5,10 @@ import java.awt.event.ActionListener;
 
 public class Controller implements ActionListener {
     private BattleShipGUI vista;
-    private Juego juego;
+    private Juego juego = new Juego();
 
     public Controller() {
         vista = new BattleShipGUI();
-        juego = new Juego();
         JPanel panelInicio = vista.getPanelInicio();
         vista.add(panelInicio);
         comenzarJuego();
@@ -19,7 +18,8 @@ public class Controller implements ActionListener {
     private void comenzarJuego() {
         vista.getStartButton().addActionListener(e -> {
             vista.remove(vista.getPanelInicio());
-            vista.add(vista.switchPanel());
+            vista.construtorPanelPrincipal();
+            vista.add(vista.switchJugador1());
             vista.revalidate();
             vista.repaint();
             vista.addTableroListener(this);
@@ -60,5 +60,6 @@ public class Controller implements ActionListener {
             }
             juego.cambiarTurno();
         }
+        vista.getTableroj1()[fila][col].setBackground(Color.BLUE);
     }
 }

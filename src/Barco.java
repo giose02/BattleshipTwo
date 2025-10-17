@@ -39,10 +39,6 @@ public class Barco {
         this.vidas = vidas;
     }
 
-    public boolean estaHundido(){ //falta hacer
-        return hundido;
-    }
-
     public boolean recibirImpacto(){ //falta hacer
         return true;
     }

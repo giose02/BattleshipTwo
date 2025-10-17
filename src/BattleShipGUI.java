@@ -7,12 +7,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
+import javax.swing.border.LineBorder;
+
 
 
 public class BattleShipGUI extends JFrame {
     private JButton startButton;
     private JButton[][] tableroj1= new JButton[10][10];
     private JButton[][] tableroj2= new JButton[10][10];
+    private JButton[] j1PowerUps= new JButton[3];
+    private JButton[] j2PowerUps= new JButton[3];
 
     public BattleShipGUI() {};
 
@@ -42,12 +46,13 @@ public class BattleShipGUI extends JFrame {
 
     // ---Creo Tablero---
     private JPanel crearTablero(JButton[][] a) {
-        JPanel tableroGUI = new JPanel(new GridLayout(10, 10, 5, 5));
+        JPanel tableroGUI = new JPanel(new GridLayout(10, 10));
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (a[i][j] == null) { // Creamos el botón solo si no existe
                     JButton botonCelda = new JButton("");
-                    botonCelda.setPreferredSize(new Dimension(10,10));
+                    botonCelda.setPreferredSize(new Dimension(30, 30));
+                    botonCelda.setContentAreaFilled(false);
                     a[i][j] = botonCelda;
                 }
                 tableroGUI.add(a[i][j]);
@@ -74,42 +79,88 @@ public class BattleShipGUI extends JFrame {
 
 
     // ---Creo Panel PowerUps
-    private JPanel crearPanelPowerUps(String... nombres) { // con el String... puedo poner tantos PwUps como quiera
+    private JPanel crearPanelPowerUps(JButton[] a) {
         JPanel panel = new JPanel();
-        for (String nombre : nombres) { // Itero en cada String parametro
-            JButton boton = new JButton(nombre);
+        for (int i=0;i<3; i++ ) {
+            JButton boton = new JButton();
+            boton.setPreferredSize(new Dimension(30, 30));
+            a[i]=boton;
             panel.add(boton);
         }
         return panel;
     }
 
+    //---getTablero---
+    private JPanel getTablero(JButton[][] a) {
+        JPanel panelTablero = new JPanel(new GridLayout(10, 10,4,4));
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                panelTablero.add(a[i][j]);
+            }
+        }
+        return panelTablero;
+    }
+
+    //---getPowerUps---
+    private JPanel getPowerUps(JButton[] a) {
+        JPanel panelPowerUps = new JPanel(new GridLayout(1, 3));
+        for (int i = 0; i < 3; i++) {
+            panelPowerUps.add(a[i]);
+        }
+        return panelPowerUps;
+    }
+    //--- Mostrar un tablero solo---
+    public JPanel switchJugador1() {
+        JPanel panelTotal = new JPanel(new GridBagLayout()); // Cambiamos el layout a GridBagLayout
+        panelTotal.setPreferredSize(new Dimension(500, 500));
+
+        JPanel panelJuego1 = new JPanel(new BorderLayout(30, 30));
+        panelJuego1.setPreferredSize(new Dimension(500, 500));
+
+        JPanel panelTablero1 = getTablero(tableroj1);
+        panelTablero1.setOpaque(false);
+        JPanel panelPowerUps1 = getPowerUps(j1PowerUps);
+        panelPowerUps1.setOpaque(false);
+
+
+        panelJuego1.add(panelTablero1, BorderLayout.CENTER);
+        panelJuego1.add(panelPowerUps1, BorderLayout.SOUTH);
+
+        panelJuego1.setOpaque(false);
+        panelTotal.setOpaque(false);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0; // Centrar horizontalmente
+        gbc.gridy = 0; // Centrar verticalmente
+        gbc.anchor = GridBagConstraints.CENTER; // Aseguramos que se centre
+        panelTotal.add(panelJuego1, gbc);
+
+        return panelTotal;
+    }
+
+    public JPanel switchJugador2() {
+        JPanel panelJuego2 = new JPanel(new GridLayout(1, 2, 20, 0));
+
+        JPanel panelTablero2 = getTablero(tableroj2);
+        JPanel panelPowerUps2 = getPowerUps(j2PowerUps);
+        panelJuego2.add(panelTablero2);
+        panelJuego2.add(panelPowerUps2);
+        panelJuego2.setOpaque(false);
+
+        return panelJuego2;
+    };
+
     //---Cambio Pantalla Juego---
 
-    public JPanel switchPanel() {
-        JPanel panelJuego = new JPanel(new GridLayout(1, 2, 5,5)); // Panel principal horizontal
-
+    public void construtorPanelPrincipal() {
         //----Jugador 1----
-        JPanel panelTablero1 = crearTablero(tableroj1);
-        JPanel panelPowerUps1 = crearPanelPowerUps("pwu1", "pwu2", "pwu3");
-        JPanel panelJugador1 = new JPanel(new BorderLayout());
-        panelJugador1.add(panelTablero1, BorderLayout.CENTER);
-        panelJugador1.add(panelPowerUps1, BorderLayout.SOUTH);
-        panelJugador1.setOpaque(false);
+        crearTablero(tableroj1);
+        crearPanelPowerUps(j1PowerUps);
 
         //----Jugador 2----
-        JPanel panelTablero2 = crearTablero(tableroj2);
-        JPanel panelPowerUps2 = crearPanelPowerUps("pwu1", "pwu2", "pwu3");
-        JPanel panelJugador2 = new JPanel(new BorderLayout());
-        panelJugador2.add(panelTablero2, BorderLayout.CENTER);
-        panelJugador2.add(panelPowerUps2, BorderLayout.SOUTH);
-        panelJugador2.setOpaque(false);
+        crearTablero(tableroj2);
+        crearPanelPowerUps(j2PowerUps);
 
-        // ---- Agregar paneles a la ventana ----
-        panelJuego.add(panelJugador1);
-        panelJuego.add(panelJugador2);
-        panelJuego.setOpaque(false);
-
-        return panelJuego;
     }
     public JButton getStartButton() {
         return startButton;

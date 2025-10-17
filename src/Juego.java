@@ -4,12 +4,12 @@ public class Juego {
     private boolean turnoActual;
     private boolean juegoTerminado;
 
+
     public Juego(){
         this.turnoActual=true;
         this.tableroJugador1=new Tablero();
         this.tableroJugador2=new Tablero();
     };
-
 
     public boolean getTurnoActual(){
         return turnoActual;
