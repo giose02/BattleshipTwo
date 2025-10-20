@@ -32,6 +32,7 @@ public class Controller implements ActionListener {
         int fila = Integer.parseInt(partes[0]);
         int col = Integer.parseInt(partes[1]);
 
+        juego.getTableroJugador1().crearBarcos();
 
         if (juego.getTurnoActual()) {
             if (!juego.getTableroJugador1().getCasilla(fila, col).getFueDisparada()
@@ -43,6 +44,7 @@ public class Controller implements ActionListener {
 
             } else if (!juego.getTableroJugador1().getCasilla(fila, col).getFueDisparada()
                     && juego.getTableroJugador1().getCasilla(fila, col).getTieneBarco()) {
+                vista.getTableroj2()[fila][col].setContentAreaFilled(true);
                 vista.getTableroj2()[fila][col].setBackground(Color.RED);
                 juego.getTableroJugador1().getCasilla(fila, col).disparar();
             }
@@ -59,9 +61,10 @@ public class Controller implements ActionListener {
         } else {
             if (!juego.getTableroJugador2().getCasilla(fila, col).getFueDisparada()
                     && !juego.getTableroJugador2().getCasilla(fila, col).getTieneBarco()) {
-                String[] imagenes = { "src/resources/anim1.jpg", "src/resources/anim2.jpg","src/resources/anim3.jpg" };
-                vista.mostrarSecuenciaImagenes(vista.getTableroj1()[fila][col], imagenes, 700);
                 juego.getTableroJugador2().getCasilla(fila, col).disparar();
+                String[] imagenes = { "src/resources/anim1.jpg", "src/resources/anim2.jpg","src/resources/anim3.jpg" };
+                vista.mostrarSecuenciaImagenes(vista.getTableroj1()[fila][col], imagenes, 600);
+
 
             } else if (!juego.getTableroJugador2().getCasilla(fila, col).getFueDisparada()
                     && juego.getTableroJugador2().getCasilla(fila, col).getTieneBarco()) {

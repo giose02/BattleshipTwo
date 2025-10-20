@@ -1,6 +1,6 @@
 public abstract class PowerUp {
 
-    public PowerUp(String nombre, String efecto){}
+    public PowerUp(){}
 
     public abstract void efecto();
 
