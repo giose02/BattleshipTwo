@@ -112,7 +112,7 @@ public class BattleShipGUI extends JFrame {
     //--- Mostrar un tablero solo---
     public JPanel switchJugador1() {
         JPanel panelTotal = new JPanel(new GridBagLayout()); // Cambiamos el layout a GridBagLayout
-        panelTotal.setPreferredSize(new Dimension(500, 500));
+        panelTotal.setPreferredSize(new Dimension(700, 700));
 
         JPanel panelJuego1 = new JPanel(new BorderLayout(30, 30));
         panelJuego1.setPreferredSize(new Dimension(800, 800));

@@ -18,14 +18,33 @@ public class Juego {
         this.turnoActual=!this.turnoActual;
     }
 
-    public boolean verificarGanador(){
+    public boolean verificarGanador(int Jugador){
+        switch (Jugador){
+            case 1:
+                return comprobarBarosHundidos(tableroJugador2);
+            case 2:
+                return comprobarBarosHundidos(tableroJugador1);
+        }
         return false;
-        //Se fija si alguno gano el juego
     }
+
     public Tablero getTableroJugador1() {
         return tableroJugador1;
     }
     public Tablero getTableroJugador2() {
         return tableroJugador2;
+    }
+
+    private boolean comprobarBarosHundidos(Tablero tablero){
+        int cont = 0;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (tablero.getCasilla(i, j).getTieneBarco() && tablero.getCasilla(i, j).getFueDisparada()) {
+                    cont++;
+                }
+            }
+        }
+        return cont == 17;
+
     }
 }
