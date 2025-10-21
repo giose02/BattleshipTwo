@@ -2,7 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class Controller implements ActionListener {
@@ -16,6 +18,13 @@ public class Controller implements ActionListener {
     // Lista para rastrear posiciones de barcos colocados [jugador][barco][casillas]
     private List<List<int[]>> barcosColocadosJ1 = new ArrayList<>();
     private List<List<int[]>> barcosColocadosJ2 = new ArrayList<>();
+
+    // Estado del bot: cola de objetivos cercanos y dirección actual
+    private Deque<int[]> objetivosBot = new ArrayDeque<>();
+    private Integer ultimoImpactoFila = null;
+    private Integer ultimoImpactoCol = null;
+    private Integer dirFila = null;
+    private Integer dirCol = null;
 
     public Controller() {
         vista = new BattleShipGUI();
@@ -218,15 +227,10 @@ public class Controller implements ActionListener {
         ocultarBarcos(juego.getTableroJugador1(), vista.getTableroj1());
         ocultarBarcos(juego.getTableroJugador2(), vista.getTableroj2());
 
-        vista.add(vista.switchJugador2()); // Mostrar tablero del jugador 2 (donde dispara el jugador 1)
+        // Mostrar siempre el tablero correspondiente al turno actual de forma
+        // consistente
+        mostrarPantallaTurnoActual();
         vista.addTableroListener(this);
-
-        // Actualizar contador inicial
-        int barcosIniciales = juego.getTableroJugador2().contarBarcosRestantes();
-        vista.actualizarContadorBarcos(barcosIniciales);
-
-        vista.revalidate();
-        vista.repaint();
     }
 
     // Método para ocultar barcos (volver a color agua) en los tableros principales
@@ -412,24 +416,8 @@ public class Controller implements ActionListener {
         vista.getContentPane().removeAll();
 
         JPanel panelTransicion = vista.getPanelTransicion(jugadorSiguiente, () -> {
-            // Callback cuando se presiona "¡LISTO!"
-            vista.getContentPane().removeAll();
-            vista.limpiarCache();
-
-            if (juego.getTurnoActual()) {
-                // Es turno del jugador 1, mostrar tablero del jugador 2
-                vista.add(vista.switchJugador2());
-                // Actualizar contador para jugador 1 (ve barcos del J2)
-                vista.actualizarContadorBarcos(juego.getTableroJugador2().contarBarcosRestantes());
-            } else {
-                // Es turno del jugador 2, mostrar tablero del jugador 1
-                vista.add(vista.switchJugador1());
-                // Actualizar contador para jugador 2 (ve barcos del J1)
-                vista.actualizarContadorBarcos(juego.getTableroJugador1().contarBarcosRestantes());
-            }
-
-            vista.revalidate();
-            vista.repaint();
+            // Al confirmar el cambio de turno, mostramos siempre el tablero correcto
+            mostrarPantallaTurnoActual();
         });
 
         vista.add(panelTransicion);
@@ -439,12 +427,20 @@ public class Controller implements ActionListener {
 
     // Método para ejecutar el disparo del bot
     private void ejecutarDisparoBot() {
-        // Buscar una casilla aleatoria que no haya sido disparada
+        // Elegir objetivo: priorizar celdas cercanas a impactos anteriores
         int fila, col;
-        do {
-            fila = (int) (Math.random() * 10);
-            col = (int) (Math.random() * 10);
-        } while (juego.getTableroJugador1().getCasilla(fila, col).getFueDisparada());
+
+        int[] objetivo = obtenerSiguienteObjetivoBot();
+        if (objetivo != null) {
+            fila = objetivo[0];
+            col = objetivo[1];
+        } else {
+            // Buscar una casilla aleatoria que no haya sido disparada
+            do {
+                fila = (int) (Math.random() * 10);
+                col = (int) (Math.random() * 10);
+            } while (juego.getTableroJugador1().getCasilla(fila, col).getFueDisparada());
+        }
 
         // Marcar como disparada
         juego.getTableroJugador1().getCasilla(fila, col).disparar();
@@ -473,6 +469,9 @@ public class Controller implements ActionListener {
                 return;
             }
 
+            // Estrategia: tras un impacto, priorizar celdas adyacentes y dirección
+            actualizarEstrategiaBotTrasImpacto(fila, col);
+
             // Mostrar mensaje que el bot sigue jugando
             Timer timerMensaje = new Timer(2000, ev -> {
                 ((Timer) ev.getSource()).stop();
@@ -491,15 +490,95 @@ public class Controller implements ActionListener {
             juego.cambiarTurno();
             Timer timerCambio = new Timer(1500, ev -> {
                 ((Timer) ev.getSource()).stop();
-                // Volver a mostrar el tablero donde el jugador 1 puede atacar
-                vista.getContentPane().removeAll();
-                vista.limpiarCache();
-                vista.add(vista.switchJugador2());
-                vista.revalidate();
-                vista.repaint();
+                // Mostrar tablero consistente con el turno actual
+                mostrarPantallaTurnoActual();
             });
             timerCambio.setRepeats(false);
             timerCambio.start();
         }
+    }
+
+    // Mostrar tablero consistente con el turno actual y actualizar contador
+    private void mostrarPantallaTurnoActual() {
+        vista.getContentPane().removeAll();
+        vista.limpiarCache();
+        if (juego.getTurnoActual()) {
+            // Turno J1: dispara al tablero del J2
+            vista.add(vista.switchJugador2());
+            vista.actualizarContadorBarcos(juego.getTableroJugador2().contarBarcosRestantes());
+        } else {
+            // Turno J2: dispara al tablero del J1
+            vista.add(vista.switchJugador1());
+            vista.actualizarContadorBarcos(juego.getTableroJugador1().contarBarcosRestantes());
+        }
+        vista.revalidate();
+        vista.repaint();
+    }
+
+    // Obtener siguiente celda objetivo del bot (prioriza cola de objetivos válidos)
+    private int[] obtenerSiguienteObjetivoBot() {
+        // Limpiar de la cola cualquier celda ya disparada
+        while (!objetivosBot.isEmpty()) {
+            int[] p = objetivosBot.peekFirst();
+            if (!juego.getTableroJugador1().getCasilla(p[0], p[1]).getFueDisparada()) {
+                return objetivosBot.pollFirst();
+            } else {
+                objetivosBot.pollFirst();
+            }
+        }
+        // Si se vació la cola, resetear dirección si no hay más candidatos
+        if (objetivosBot.isEmpty()) {
+            dirFila = null;
+            dirCol = null;
+            // No borramos ultimoImpacto para permitir reintentos alrededor si aparece otro
+            // impacto cercano
+        }
+        return null;
+    }
+
+    private void actualizarEstrategiaBotTrasImpacto(int fila, int col) {
+        // Si no hay último impacto, este es el pivot inicial
+        if (ultimoImpactoFila == null) {
+            ultimoImpactoFila = fila;
+            ultimoImpactoCol = col;
+            // Encolar vecinos inmediatos
+            encolarSiValido(fila - 1, col);
+            encolarSiValido(fila + 1, col);
+            encolarSiValido(fila, col - 1);
+            encolarSiValido(fila, col + 1);
+            return;
+        }
+
+        // Si ya había un impacto previo, intentar determinar dirección
+        // (horizontal/vertical)
+        if (dirFila == null && dirCol == null) {
+            int df = fila - ultimoImpactoFila;
+            int dc = col - ultimoImpactoCol;
+            if (Math.abs(df) + Math.abs(dc) == 1) { // adyacente ortogonal
+                dirFila = df;
+                dirCol = dc;
+            }
+        }
+
+        // Encolar la siguiente celda en la misma dirección, si la hay
+        if (dirFila != null && dirCol != null) {
+            int nf = fila + dirFila;
+            int nc = col + dirCol;
+            encolarSiValido(nf, nc);
+        }
+
+        // Actualizar último impacto
+        ultimoImpactoFila = fila;
+        ultimoImpactoCol = col;
+    }
+
+    private void encolarSiValido(int f, int c) {
+        if (enTablero(f, c) && !juego.getTableroJugador1().getCasilla(f, c).getFueDisparada()) {
+            objetivosBot.addLast(new int[] { f, c });
+        }
+    }
+
+    private boolean enTablero(int f, int c) {
+        return f >= 0 && f < 10 && c >= 0 && c < 10;
     }
 }
