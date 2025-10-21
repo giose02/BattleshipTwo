@@ -1,14 +1,14 @@
-public class Casilla{
+public class Casilla {
     private boolean tieneBarco;
     private boolean fueDisparada;
 
-    //---Contructor---
-    public Casilla(){
-        this.tieneBarco=false;
-        this.fueDisparada= false;
+    // ---Contructor---
+    public Casilla() {
+        this.tieneBarco = false;
+        this.fueDisparada = false;
     }
 
-    //---Getters---
+    // ---Getters---
     public boolean getFueDisparada() {
         return fueDisparada;
     }
@@ -17,16 +17,17 @@ public class Casilla{
         return tieneBarco;
     }
 
-    //---Setter---
+    // ---Setter---
     public void setFueDisparada(boolean fueDisparada) {
         this.fueDisparada = fueDisparada;
     }
+
     public void setTieneBarco(boolean tieneBarco) {
         this.tieneBarco = tieneBarco;
     }
 
-    //---Metodos---
-    public void disparar(){
-        this.fueDisparada=true;
+    // ---Metodos---
+    public void disparar() {
+        this.fueDisparada = true;
     }
 }
